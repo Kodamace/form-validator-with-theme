@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HomeHeader } from "./components/HomeHeader";
 import { InputField } from "../../components/InputField";
@@ -11,10 +11,7 @@ import {
   StyledFormWrapper,
 } from "./styles";
 import ThemeContext, { ICurrentTheme } from "../../core/theme/global.theme";
-import {
-  toggleThemeStart,
-  toggleThemeSuccess,
-} from "../../core/theme/theme.actions";
+
 import {
   ErrorMessage,
   handelFormSubmissionErrors,
@@ -34,10 +31,8 @@ export default function Home() {
   const [errors, setErrors] = useState<any>({});
   const [touched, setTouched] = useState<any>({});
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const dispatch = useDispatch();
 
-  // Our root state that is destruct here from the home reducer
   const {
     email,
     firstName,
@@ -48,12 +43,6 @@ export default function Home() {
     lastName,
     middleName,
   } = useSelector((state: RootState) => state.homeReducer);
-
-  //  We have the stated of our theme kept in our store root state so that we can dispatch an action
-  //  that provides the selected them color to our them context set in the upper levels of our app
-  const currentTheme = useSelector(
-    (state: RootState) => state.themeReducer.currentTheme
-  );
 
   const theme: ICurrentTheme = useContext(ThemeContext);
 
@@ -100,25 +89,10 @@ export default function Home() {
     </div>
   );
 
-  // Depending on the current theme we handle the toggling of the theme color selected
-  const handleThemeToggle = () => {
-    dispatch(toggleThemeStart());
-    if (currentTheme === "light") {
-      return dispatch(toggleThemeSuccess("dark"));
-    }
-    dispatch(toggleThemeSuccess("light"));
-  };
-
-  // This is to track the inputs that are touched if we want to handle validation on touched as well
   const handleInputValueTouchedState = (touchedValue: string) => {
     setTouched({ ...touched, [touchedValue]: true });
   };
 
-  // To handle the state of the selected input errors and dispatch the action to update the state
-  // and we pass a call back which is the function to update the specific input field
-  // inputValue: 'name of the input field error property'
-  // value: the change event target value
-  // cb: function/action we want to call
   const handleInputValueStateUpdate = (
     inputValue: string,
     value: string,
@@ -142,12 +116,8 @@ export default function Home() {
     }
   };
 
-  console.log(emailErrorMessage);
-
-  // When we submit our form we handle the errors and dispatch the actions
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // We handle the checking of the fields that are empty and update the errors accordingly
     const errorObj = handelFormSubmissionErrors([
       { value: `${firstName}`, key: "firstName" },
       { value: `${lastName}`, key: "lastName" },
@@ -167,17 +137,12 @@ export default function Home() {
   };
 
   const handleClose = () => {
-    setShowModal(false);
     dispatch(clearState());
   };
 
-  useEffect(() => {
-    if (formSubmissionMessage) setShowModal(true);
-  }, [formSubmissionMessage]);
-
   return (
     <div>
-      <HomeHeader handleThemeToggle={handleThemeToggle} />
+      <HomeHeader />
       <StyledFormWrapper>
         <StyledForm onSubmit={(e) => handleSubmit(e)}>
           <InputField
@@ -240,7 +205,7 @@ export default function Home() {
           </StyledActionsWrapper>
         </StyledForm>
       </StyledFormWrapper>
-      <PopUpModal showModal={showModal} body={modalBody} />
+      <PopUpModal showModal={formSubmissionMessage} body={modalBody} />
     </div>
   );
 }

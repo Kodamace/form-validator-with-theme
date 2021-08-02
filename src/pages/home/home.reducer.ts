@@ -101,7 +101,7 @@ export default function homeReducer(state = initialState, action: any) {
     case CLEAR_STATE:
       return {
         ...state,
-        initialState,
+        ...initialState,
       };
     default:
       return state;
