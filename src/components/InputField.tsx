@@ -37,7 +37,7 @@ export const InputField: FunctionComponent<IInputField> = ({
         variant="outlined"
         value={value}
         placeholder={name}
-        onChange={({ target: { value } }) => updateInputFunction(value)}
+        onChange={(e) => updateInputFunction(e.target.value)}
       />
       {isRequired ? (
         <StyledRequiredText>Required field*</StyledRequiredText>
